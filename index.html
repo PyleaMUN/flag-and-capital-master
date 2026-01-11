@@ -48,7 +48,6 @@
             border-top: 8px solid var(--gold);
             overflow-y: auto; 
             position: relative;
-            transition: all 0.3s ease;
         }
 
         /* --- Header --- */
@@ -60,6 +59,7 @@
             flex-shrink: 0; 
             margin-bottom: 1rem;
             position: relative;
+            min-height: 60px;
         }
 
         .logo-img {
@@ -78,7 +78,7 @@
             line-height: 1.1;
         }
 
-        /* --- Menu Screen Styles --- */
+        /* --- Menu Screen --- */
         #menuScreen {
             display: flex;
             flex-direction: column;
@@ -110,7 +110,7 @@
             box-shadow: 0 8px 15px rgba(17, 94, 110, 0.2);
         }
 
-        /* --- Game Screen Elements --- */
+        /* --- Game Screen --- */
         .score-board {
             font-size: 0.95rem;
             color: #666;
@@ -128,43 +128,45 @@
             font-weight: 800;
         }
 
-        /* --- Dynamic Display Area (Flag or Text) --- */
+        /* --- Display Container (Shared) --- */
         .display-container {
-            flex: 1 1 auto;
-            min-height: 100px;
-            max-height: 200px;
             width: 100%;
+            margin-bottom: 1.5rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 1.5rem;
-            overflow: hidden; 
             border-radius: 12px;
         }
 
-        /* Flag Mode Specifics */
-        .flag-mode-bg {
-            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, rgba(255,255,255,0) 60%);
-        }
+        /* Mode Specific Styles */
         
-        .flag-img {
-            width: auto;
-            height: auto;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain; 
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid #eee;
+        /* 1. Flag Mode: Fixed height box, image fits inside */
+        .flag-mode {
+            height: 180px; /* Allocated space for flag */
+            /* Subtle radial glow */
+            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, rgba(255,255,255,0) 70%);
         }
 
-        /* Capital Mode Specifics */
+        .flag-img {
+            width: 100%;
+            height: 100%;
+            /* CRITICAL FIX: 'contain' ensures the WHOLE image fits in the box, never cropped */
+            object-fit: contain; 
+            /* Better shadow for transparent images */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); 
+        }
+
+        /* 2. Capital Mode: Flexible height for text */
+        .capital-mode {
+            min-height: 100px;
+            padding: 10px;
+        }
+
         .capital-text-display {
-            font-size: 1.8rem; /* Slightly smaller to fit long names */
+            font-size: 1.8rem;
             font-weight: 800;
             color: var(--primary);
             text-transform: uppercase;
-            padding: 10px;
             line-height: 1.2;
             word-wrap: break-word;
         }
@@ -230,12 +232,13 @@
         .back-btn {
             position: absolute;
             left: 0;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             background: none;
             border: none;
             color: var(--gold);
             cursor: pointer;
             font-weight: 700;
+            padding: 5px;
         }
         .back-btn:hover { text-decoration: underline; }
 
@@ -244,7 +247,7 @@
             .container { padding: 1rem; }
             .logo-img { height: 45px; }
             h1 { font-size: 1.3rem; }
-            .display-container { margin-bottom: 1rem; max-height: 140px; }
+            .flag-mode { height: 140px; } /* Smaller flag area */
             .game-btn { padding: 0.8rem; }
             .capital-text-display { font-size: 1.4rem; }
         }
@@ -302,8 +305,7 @@
     const backButton = document.getElementById('backButton');
     const gameTitle = document.getElementById('gameTitle');
 
-    // --- DATA: FLAGS (ISO Codes) ---
-    // Includes ~240 countries/territories
+    // --- DATA: FLAGS ---
     const countries = [
         {code: "af", name: "Afghanistan"}, {code: "al", name: "Albania"}, {code: "dz", name: "Algeria"}, 
         {code: "ad", name: "Andorra"}, {code: "ao", name: "Angola"}, {code: "ag", name: "Antigua & Barbuda"}, 
@@ -372,10 +374,10 @@
         {code: "ye", name: "Yemen"}, {code: "zm", name: "Zambia"}, {code: "zw", name: "Zimbabwe"}
     ];
 
-    // --- DATA: CAPITALS (Massive List - 190+ Countries) ---
+    // --- DATA: CAPITALS ---
     const capitalsData = [
         // --- EUROPE ---
-        { country: "Greece", correct: "Athens", wrong: "Mykonos" }, // UPDATED
+        { country: "Greece", correct: "Athens", wrong: "Mykonos" },
         { country: "United Kingdom", correct: "London", wrong: "Manchester" },
         { country: "France", correct: "Paris", wrong: "Marseille" },
         { country: "Germany", correct: "Berlin", wrong: "Munich" },
@@ -432,7 +434,7 @@
         { country: "Peru", correct: "Lima", wrong: "Cusco" },
         { country: "Venezuela", correct: "Caracas", wrong: "Maracaibo" },
         { country: "Ecuador", correct: "Quito", wrong: "Guayaquil" },
-        { country: "Bolivia", correct: "Sucre", wrong: "La Paz" }, // Sucre is constitutional
+        { country: "Bolivia", correct: "Sucre", wrong: "La Paz" },
         { country: "Paraguay", correct: "Asuncion", wrong: "Ciudad del Este" },
         { country: "Uruguay", correct: "Montevideo", wrong: "Salto" },
         { country: "Panama", correct: "Panama City", wrong: "Colon" },
@@ -542,7 +544,7 @@
         { country: "Micronesia", correct: "Palikir", wrong: "Weno" },
         { country: "Marshall Islands", correct: "Majuro", wrong: "Ebeye" },
         { country: "Kiribati", correct: "Tarawa", wrong: "Betio" },
-        { country: "Nauru", correct: "Yaren", wrong: "Denigomodu" }, // De facto capital
+        { country: "Nauru", correct: "Yaren", wrong: "Denigomodu" },
         { country: "Tuvalu", correct: "Funafuti", wrong: "Asau" }
     ];
 
@@ -597,14 +599,14 @@
     }
 
     function setupFlagQuestion() {
-        displayContainer.className = "display-container flag-mode-bg";
+        displayContainer.className = "display-container flag-mode";
         
         const correctIndex = Math.floor(Math.random() * countries.length);
         const correctCountry = countries[correctIndex];
         const wrongCountry = getFlagDistractor(correctCountry);
 
         const img = document.createElement('img');
-        img.src = `https://flagcdn.com/256x192/${correctCountry.code}.png`;
+        img.src = `https://flagcdn.com/w320/${correctCountry.code}.png`;
         img.className = "flag-img";
         displayContainer.appendChild(img);
 
@@ -617,7 +619,7 @@
     }
 
     function setupCapitalQuestion() {
-        displayContainer.className = "display-container"; 
+        displayContainer.className = "display-container capital-mode"; 
         
         const dataIndex = Math.floor(Math.random() * capitalsData.length);
         const data = capitalsData[dataIndex];
