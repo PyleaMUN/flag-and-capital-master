@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PyleaMUN Flag & Capital Challenge</title>
+    <style>
+        /* --- PyleaMUN Palette --- */
+        :root {
+            --page-bg: #E3F2F5;        
+            --card-bg: #ffffff;
+            --primary: #115E6E;        /* Deep Teal */
+            --gold: #D4AF37;           /* Laurel Gold */
+            --danger: #E74C3C;
+            --success: #27AE60;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--page-bg);
+            background-image: linear-gradient(135deg, #E3F2F5 0%, #C8DEE5 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh; 
+            margin: 0;
+            padding: 10px;
+            color: var(--primary);
+            overflow: hidden; 
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 450px;
+            max-height: 95vh;
+            max-height: 95dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; 
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(17, 94, 110, 0.15);
+            text-align: center;
+            border-top: 8px solid var(--gold);
+            overflow-y: auto; 
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* --- Header --- */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-shrink: 0; 
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .logo-img {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        /* --- Menu Screen Styles --- */
+        #menuScreen {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding-top: 1rem;
+        }
+
+        .menu-btn {
+            background: #fff;
+            border: 2px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .menu-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(17, 94, 110, 0.2);
+        }
+
+        /* --- Game Screen Elements --- */
+        .score-board {
+            font-size: 0.95rem;
+            color: #666;
+            font-weight: 500;
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 50px;
+            align-self: center;
+            flex-shrink: 0; 
+            margin-bottom: 1rem; 
+        }
+
+        .score-board span {
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        /* --- Dynamic Display Area (Flag or Text) --- */
+        .display-container {
+            flex: 1 1 auto;
+            min-height: 100px;
+            max-height: 200px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            overflow: hidden; 
+            border-radius: 12px;
+        }
+
+        /* Flag Mode Specifics */
+        .flag-mode-bg {
+            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, rgba(255,255,255,0) 60%);
+        }
+        
+        .flag-img {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; 
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+
+        /* Capital Mode Specifics */
+        .capital-text-display {
+            font-size: 1.8rem; /* Slightly smaller to fit long names */
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            padding: 10px;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+
+        /* --- Buttons --- */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+            margin-bottom: 1rem; 
+            flex-shrink: 0; 
+        }
+
+        .game-btn {
+            background: #fff;
+            border: 2px solid #dae4ee;
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none;
+        }
+
+        .game-btn:hover {
+            border-color: var(--gold);
+            background: #FFFCF0;
+        }
+
+        .game-btn:active { transform: scale(0.98); }
+
+        .game-btn.correct {
+            background-color: var(--success) !important;
+            border-color: var(--success) !important;
+            color: white !important;
+        }
+
+        .game-btn.wrong {
+            background-color: var(--danger) !important;
+            border-color: var(--danger) !important;
+            color: white !important;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: auto;
+            font-size: 0.7rem;
+            color: var(--primary);
+            opacity: 0.8;
+            font-weight: 600;
+            border-top: 1px solid rgba(17, 94, 110, 0.1);
+            padding-top: 0.8rem;
+            line-height: 1.3;
+            flex-shrink: 0;
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            font-size: 0.8rem;
+            background: none;
+            border: none;
+            color: var(--gold);
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .back-btn:hover { text-decoration: underline; }
+
+        /* --- MOBILE OPTIMIZATION --- */
+        @media (max-width: 600px), (max-height: 650px) {
+            .container { padding: 1rem; }
+            .logo-img { height: 45px; }
+            h1 { font-size: 1.3rem; }
+            .display-container { margin-bottom: 1rem; max-height: 140px; }
+            .game-btn { padding: 0.8rem; }
+            .capital-text-display { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-container">
+        <button id="backButton" class="back-btn hidden" onclick="showMenu()">❮ Menu</button>
+        <img src="logo.png" alt="PyleaMUN" class="logo-img" onerror="this.style.display='none'">
+        <h1 id="gameTitle">PyleaMUN</h1>
+    </div>
+
+    <div id="menuScreen">
+        <p style="margin:0; color:#666;">Select your challenge:</p>
+        <button class="menu-btn" onclick="startMode('flags')">
+            🇺🇳 Flag Master
+        </button>
+        <button class="menu-btn" onclick="startMode('capitals')">
+            🏛️ Capital Cities
+        </button>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+        <div class="score-board">
+            Score: <span id="currentScore">0</span> | Best: <span id="bestScore">0</span>
+        </div>
+
+        <div id="displayContainer" class="display-container">
+            </div>
+
+        <div class="options-grid" id="optionsContainer">
+            </div>
+        
+        <div class="footer">
+            ✨✍️ Created by Panagiotis Domvros, President of PyleaMUN, All Rights Reserved ✍️✨
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- STATE MANAGEMENT ---
+    let gameMode = 'flags';
+    let currentScore = 0;
+    let isClickable = true;
+    
+    // --- DOM ELEMENTS ---
+    const menuScreen = document.getElementById('menuScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const displayContainer = document.getElementById('displayContainer');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const scoreDisplay = document.getElementById('currentScore');
+    const bestDisplay = document.getElementById('bestScore');
+    const backButton = document.getElementById('backButton');
+    const gameTitle = document.getElementById('gameTitle');
+
+    // --- DATA: FLAGS (ISO Codes) ---
+    // Includes ~240 countries/territories
+    const countries = [
+        {code: "af", name: "Afghanistan"}, {code: "al", name: "Albania"}, {code: "dz", name: "Algeria"}, 
+        {code: "ad", name: "Andorra"}, {code: "ao", name: "Angola"}, {code: "ag", name: "Antigua & Barbuda"}, 
+        {code: "ar", name: "Argentina"}, {code: "am", name: "Armenia"}, {code: "au", name: "Australia"}, 
+        {code: "at", name: "Austria"}, {code: "az", name: "Azerbaijan"}, {code: "bs", name: "Bahamas"}, 
+        {code: "bh", name: "Bahrain"}, {code: "bd", name: "Bangladesh"}, {code: "bb", name: "Barbados"}, 
+        {code: "by", name: "Belarus"}, {code: "be", name: "Belgium"}, {code: "bz", name: "Belize"}, 
+        {code: "bj", name: "Benin"}, {code: "bt", name: "Bhutan"}, {code: "bo", name: "Bolivia"}, 
+        {code: "ba", name: "Bosnia & Herzegovina"}, {code: "bw", name: "Botswana"}, {code: "br", name: "Brazil"}, 
+        {code: "bn", name: "Brunei"}, {code: "bg", name: "Bulgaria"}, {code: "bf", name: "Burkina Faso"}, 
+        {code: "bi", name: "Burundi"}, {code: "kh", name: "Cambodia"}, {code: "cm", name: "Cameroon"}, 
+        {code: "ca", name: "Canada"}, {code: "cv", name: "Cape Verde"}, {code: "cf", name: "Central African Rep."}, 
+        {code: "td", name: "Chad"}, {code: "cl", name: "Chile"}, {code: "cn", name: "China"}, 
+        {code: "co", name: "Colombia"}, {code: "km", name: "Comoros"}, {code: "cg", name: "Congo"}, 
+        {code: "cd", name: "Congo (DRC)"}, {code: "cr", name: "Costa Rica"}, {code: "hr", name: "Croatia"}, 
+        {code: "cu", name: "Cuba"}, {code: "cy", name: "Cyprus"}, {code: "cz", name: "Czechia"}, 
+        {code: "dk", name: "Denmark"}, {code: "dj", name: "Djibouti"}, {code: "dm", name: "Dominica"}, 
+        {code: "do", name: "Dominican Republic"}, {code: "ec", name: "Ecuador"}, {code: "eg", name: "Egypt"}, 
+        {code: "sv", name: "El Salvador"}, {code: "gq", name: "Equatorial Guinea"}, {code: "er", name: "Eritrea"}, 
+        {code: "ee", name: "Estonia"}, {code: "sz", name: "Eswatini"}, {code: "et", name: "Ethiopia"}, 
+        {code: "fj", name: "Fiji"}, {code: "fi", name: "Finland"}, {code: "fr", name: "France"}, 
+        {code: "ga", name: "Gabon"}, {code: "gm", name: "Gambia"}, {code: "ge", name: "Georgia"}, 
+        {code: "de", name: "Germany"}, {code: "gh", name: "Ghana"}, {code: "gr", name: "Greece"}, 
+        {code: "gd", name: "Grenada"}, {code: "gt", name: "Guatemala"}, {code: "gn", name: "Guinea"}, 
+        {code: "gw", name: "Guinea-Bissau"}, {code: "gy", name: "Guyana"}, {code: "ht", name: "Haiti"}, 
+        {code: "hn", name: "Honduras"}, {code: "hu", name: "Hungary"}, {code: "is", name: "Iceland"}, 
+        {code: "in", name: "India"}, {code: "id", name: "Indonesia"}, {code: "ir", name: "Iran"}, 
+        {code: "iq", name: "Iraq"}, {code: "ie", name: "Ireland"}, {code: "il", name: "Israel"}, 
+        {code: "it", name: "Italy"}, {code: "jm", name: "Jamaica"}, {code: "jp", name: "Japan"}, 
+        {code: "jo", name: "Jordan"}, {code: "kz", name: "Kazakhstan"}, {code: "ke", name: "Kenya"}, 
+        {code: "ki", name: "Kiribati"}, {code: "kp", name: "Korea (North)"}, {code: "kr", name: "Korea (South)"}, 
+        {code: "xk", name: "Kosovo"}, {code: "kw", name: "Kuwait"}, {code: "kg", name: "Kyrgyzstan"}, 
+        {code: "la", name: "Laos"}, {code: "lv", name: "Latvia"}, {code: "lb", name: "Lebanon"}, 
+        {code: "ls", name: "Lesotho"}, {code: "lr", name: "Liberia"}, {code: "ly", name: "Libya"}, 
+        {code: "li", name: "Liechtenstein"}, {code: "lt", name: "Lithuania"}, {code: "lu", name: "Luxembourg"}, 
+        {code: "mg", name: "Madagascar"}, {code: "mw", name: "Malawi"}, {code: "my", name: "Malaysia"}, 
+        {code: "mv", name: "Maldives"}, {code: "ml", name: "Mali"}, {code: "mt", name: "Malta"}, 
+        {code: "mh", name: "Marshall Islands"}, {code: "mr", name: "Mauritania"}, {code: "mu", name: "Mauritius"}, 
+        {code: "mx", name: "Mexico"}, {code: "fm", name: "Micronesia"}, {code: "md", name: "Moldova"}, 
+        {code: "mc", name: "Monaco"}, {code: "mn", name: "Mongolia"}, {code: "me", name: "Montenegro"}, 
+        {code: "ma", name: "Morocco"}, {code: "mz", name: "Mozambique"}, {code: "mm", name: "Myanmar"}, 
+        {code: "na", name: "Namibia"}, {code: "nr", name: "Nauru"}, {code: "np", name: "Nepal"}, 
+        {code: "nl", name: "Netherlands"}, {code: "nz", name: "New Zealand"}, {code: "ni", name: "Nicaragua"}, 
+        {code: "ne", name: "Niger"}, {code: "ng", name: "Nigeria"}, {code: "mk", name: "North Macedonia"}, 
+        {code: "no", name: "Norway"}, {code: "om", name: "Oman"}, {code: "pk", name: "Pakistan"}, 
+        {code: "pw", name: "Palau"}, {code: "ps", name: "Palestine"}, {code: "pa", name: "Panama"}, 
+        {code: "pg", name: "Papua New Guinea"}, {code: "py", name: "Paraguay"}, {code: "pe", name: "Peru"}, 
+        {code: "ph", name: "Philippines"}, {code: "pl", name: "Poland"}, {code: "pt", name: "Portugal"}, 
+        {code: "qa", name: "Qatar"}, {code: "ro", name: "Romania"}, {code: "ru", name: "Russia"}, 
+        {code: "rw", name: "Rwanda"}, {code: "kn", name: "Saint Kitts & Nevis"}, {code: "lc", name: "Saint Lucia"}, 
+        {code: "ws", name: "Samoa"}, {code: "sm", name: "San Marino"}, {code: "st", name: "Sao Tome & Principe"}, 
+        {code: "sa", name: "Saudi Arabia"}, {code: "sn", name: "Senegal"}, {code: "rs", name: "Serbia"}, 
+        {code: "sc", name: "Seychelles"}, {code: "sl", name: "Sierra Leone"}, {code: "sg", name: "Singapore"}, 
+        {code: "sk", name: "Slovakia"}, {code: "si", name: "Slovenia"}, {code: "sb", name: "Solomon Islands"}, 
+        {code: "so", name: "Somalia"}, {code: "za", name: "South Africa"}, {code: "ss", name: "South Sudan"}, 
+        {code: "es", name: "Spain"}, {code: "lk", name: "Sri Lanka"}, {code: "sd", name: "Sudan"}, 
+        {code: "sr", name: "Suriname"}, {code: "se", name: "Sweden"}, {code: "ch", name: "Switzerland"}, 
+        {code: "sy", name: "Syria"}, {code: "tw", name: "Taiwan"}, {code: "tj", name: "Tajikistan"}, 
+        {code: "tz", name: "Tanzania"}, {code: "th", name: "Thailand"}, {code: "tl", name: "Timor-Leste"}, 
+        {code: "tg", name: "Togo"}, {code: "to", name: "Tonga"}, {code: "tt", name: "Trinidad & Tobago"}, 
+        {code: "tn", name: "Tunisia"}, {code: "tr", name: "Turkey"}, {code: "tm", name: "Turkmenistan"}, 
+        {code: "tv", name: "Tuvalu"}, {code: "ug", name: "Uganda"}, {code: "ua", name: "Ukraine"}, 
+        {code: "ae", name: "UAE"}, {code: "gb", name: "United Kingdom"}, {code: "us", name: "United States"}, 
+        {code: "uy", name: "Uruguay"}, {code: "uz", name: "Uzbekistan"}, {code: "vu", name: "Vanuatu"}, 
+        {code: "va", name: "Vatican City"}, {code: "ve", name: "Venezuela"}, {code: "vn", name: "Vietnam"}, 
+        {code: "ye", name: "Yemen"}, {code: "zm", name: "Zambia"}, {code: "zw", name: "Zimbabwe"}
+    ];
+
+    // --- DATA: CAPITALS (Massive List - 190+ Countries) ---
+    const capitalsData = [
+        // --- EUROPE ---
+        { country: "Greece", correct: "Athens", wrong: "Mykonos" }, // UPDATED
+        { country: "United Kingdom", correct: "London", wrong: "Manchester" },
+        { country: "France", correct: "Paris", wrong: "Marseille" },
+        { country: "Germany", correct: "Berlin", wrong: "Munich" },
+        { country: "Italy", correct: "Rome", wrong: "Milan" },
+        { country: "Spain", correct: "Madrid", wrong: "Barcelona" },
+        { country: "Portugal", correct: "Lisbon", wrong: "Porto" },
+        { country: "Russia", correct: "Moscow", wrong: "Saint Petersburg" },
+        { country: "Ukraine", correct: "Kyiv", wrong: "Kharkiv" },
+        { country: "Poland", correct: "Warsaw", wrong: "Krakow" },
+        { country: "Netherlands", correct: "Amsterdam", wrong: "Rotterdam" },
+        { country: "Belgium", correct: "Brussels", wrong: "Antwerp" },
+        { country: "Switzerland", correct: "Bern", wrong: "Zurich" },
+        { country: "Austria", correct: "Vienna", wrong: "Salzburg" },
+        { country: "Sweden", correct: "Stockholm", wrong: "Gothenburg" },
+        { country: "Norway", correct: "Oslo", wrong: "Bergen" },
+        { country: "Finland", correct: "Helsinki", wrong: "Espoo" },
+        { country: "Denmark", correct: "Copenhagen", wrong: "Aarhus" },
+        { country: "Ireland", correct: "Dublin", wrong: "Cork" },
+        { country: "Czechia", correct: "Prague", wrong: "Brno" },
+        { country: "Hungary", correct: "Budapest", wrong: "Debrecen" },
+        { country: "Romania", correct: "Bucharest", wrong: "Cluj-Napoca" },
+        { country: "Bulgaria", correct: "Sofia", wrong: "Plovdiv" },
+        { country: "Serbia", correct: "Belgrade", wrong: "Novi Sad" },
+        { country: "Croatia", correct: "Zagreb", wrong: "Split" },
+        { country: "Slovakia", correct: "Bratislava", wrong: "Kosice" },
+        { country: "Slovenia", correct: "Ljubljana", wrong: "Maribor" },
+        { country: "Bosnia & Herzegovina", correct: "Sarajevo", wrong: "Mostar" },
+        { country: "Albania", correct: "Tirana", wrong: "Durres" },
+        { country: "North Macedonia", correct: "Skopje", wrong: "Bitola" },
+        { country: "Montenegro", correct: "Podgorica", wrong: "Budva" },
+        { country: "Iceland", correct: "Reykjavik", wrong: "Kopavogur" },
+        { country: "Estonia", correct: "Tallinn", wrong: "Tartu" },
+        { country: "Latvia", correct: "Riga", wrong: "Daugavpils" },
+        { country: "Lithuania", correct: "Vilnius", wrong: "Kaunas" },
+        { country: "Belarus", correct: "Minsk", wrong: "Gomel" },
+        { country: "Moldova", correct: "Chisinau", wrong: "Balti" },
+        { country: "Malta", correct: "Valletta", wrong: "Birkirkara" },
+        { country: "Cyprus", correct: "Nicosia", wrong: "Limassol" },
+        { country: "Luxembourg", correct: "Luxembourg City", wrong: "Esch-sur-Alzette" },
+        { country: "Andorra", correct: "Andorra la Vella", wrong: "Escaldes-Engordany" },
+        { country: "San Marino", correct: "San Marino", wrong: "Serravalle" },
+        { country: "Liechtenstein", correct: "Vaduz", wrong: "Schaan" },
+        { country: "Monaco", correct: "Monaco", wrong: "Monte Carlo" },
+        { country: "Vatican City", correct: "Vatican City", wrong: "Rome" },
+
+        // --- AMERICAS ---
+        { country: "United States", correct: "Washington D.C.", wrong: "New York" },
+        { country: "Canada", correct: "Ottawa", wrong: "Toronto" },
+        { country: "Mexico", correct: "Mexico City", wrong: "Guadalajara" },
+        { country: "Brazil", correct: "Brasilia", wrong: "Rio de Janeiro" },
+        { country: "Argentina", correct: "Buenos Aires", wrong: "Cordoba" },
+        { country: "Chile", correct: "Santiago", wrong: "Valparaiso" },
+        { country: "Colombia", correct: "Bogota", wrong: "Medellin" },
+        { country: "Peru", correct: "Lima", wrong: "Cusco" },
+        { country: "Venezuela", correct: "Caracas", wrong: "Maracaibo" },
+        { country: "Ecuador", correct: "Quito", wrong: "Guayaquil" },
+        { country: "Bolivia", correct: "Sucre", wrong: "La Paz" }, // Sucre is constitutional
+        { country: "Paraguay", correct: "Asuncion", wrong: "Ciudad del Este" },
+        { country: "Uruguay", correct: "Montevideo", wrong: "Salto" },
+        { country: "Panama", correct: "Panama City", wrong: "Colon" },
+        { country: "Costa Rica", correct: "San Jose", wrong: "Liberia" },
+        { country: "Cuba", correct: "Havana", wrong: "Santiago de Cuba" },
+        { country: "Jamaica", correct: "Kingston", wrong: "Montego Bay" },
+        { country: "Dominican Republic", correct: "Santo Domingo", wrong: "Punta Cana" },
+        { country: "Haiti", correct: "Port-au-Prince", wrong: "Cap-Haitien" },
+        { country: "Guatemala", correct: "Guatemala City", wrong: "Antigua" },
+        { country: "Honduras", correct: "Tegucigalpa", wrong: "San Pedro Sula" },
+        { country: "El Salvador", correct: "San Salvador", wrong: "Santa Ana" },
+        { country: "Nicaragua", correct: "Managua", wrong: "Leon" },
+        { country: "Belize", correct: "Belmopan", wrong: "Belize City" },
+        { country: "Bahamas", correct: "Nassau", wrong: "Freeport" },
+        { country: "Barbados", correct: "Bridgetown", wrong: "Speightstown" },
+        { country: "Trinidad & Tobago", correct: "Port of Spain", wrong: "San Fernando" },
+        { country: "Guyana", correct: "Georgetown", wrong: "Linden" },
+        { country: "Suriname", correct: "Paramaribo", wrong: "Lelydorp" },
+
+        // --- ASIA ---
+        { country: "China", correct: "Beijing", wrong: "Shanghai" },
+        { country: "Japan", correct: "Tokyo", wrong: "Kyoto" },
+        { country: "India", correct: "New Delhi", wrong: "Mumbai" },
+        { country: "South Korea", correct: "Seoul", wrong: "Busan" },
+        { country: "North Korea", correct: "Pyongyang", wrong: "Hamhung" },
+        { country: "Indonesia", correct: "Jakarta", wrong: "Bali" },
+        { country: "Pakistan", correct: "Islamabad", wrong: "Karachi" },
+        { country: "Bangladesh", correct: "Dhaka", wrong: "Chittagong" },
+        { country: "Vietnam", correct: "Hanoi", wrong: "Ho Chi Minh City" },
+        { country: "Thailand", correct: "Bangkok", wrong: "Chiang Mai" },
+        { country: "Philippines", correct: "Manila", wrong: "Cebu City" },
+        { country: "Malaysia", correct: "Kuala Lumpur", wrong: "Penang" },
+        { country: "Singapore", correct: "Singapore", wrong: "Sentosa" },
+        { country: "Myanmar", correct: "Naypyidaw", wrong: "Yangon" },
+        { country: "Cambodia", correct: "Phnom Penh", wrong: "Siem Reap" },
+        { country: "Laos", correct: "Vientiane", wrong: "Luang Prabang" },
+        { country: "Turkey", correct: "Ankara", wrong: "Istanbul" },
+        { country: "Iran", correct: "Tehran", wrong: "Isfahan" },
+        { country: "Iraq", correct: "Baghdad", wrong: "Basra" },
+        { country: "Saudi Arabia", correct: "Riyadh", wrong: "Jeddah" },
+        { country: "UAE", correct: "Abu Dhabi", wrong: "Dubai" },
+        { country: "Israel", correct: "Jerusalem", wrong: "Tel Aviv" },
+        { country: "Jordan", correct: "Amman", wrong: "Aqaba" },
+        { country: "Lebanon", correct: "Beirut", wrong: "Tripoli" },
+        { country: "Syria", correct: "Damascus", wrong: "Aleppo" },
+        { country: "Kazakhstan", correct: "Astana", wrong: "Almaty" },
+        { country: "Uzbekistan", correct: "Tashkent", wrong: "Samarkand" },
+        { country: "Turkmenistan", correct: "Ashgabat", wrong: "Mary" },
+        { country: "Kyrgyzstan", correct: "Bishkek", wrong: "Osh" },
+        { country: "Tajikistan", correct: "Dushanbe", wrong: "Khujand" },
+        { country: "Afghanistan", correct: "Kabul", wrong: "Kandahar" },
+        { country: "Mongolia", correct: "Ulaanbaatar", wrong: "Erdenet" },
+        { country: "Nepal", correct: "Kathmandu", wrong: "Pokhara" },
+        { country: "Sri Lanka", correct: "Sri Jayawardenepura Kotte", wrong: "Colombo" },
+        { country: "Maldives", correct: "Male", wrong: "Addu City" },
+        { country: "Bhutan", correct: "Thimphu", wrong: "Paro" },
+        { country: "Armenia", correct: "Yerevan", wrong: "Gyumri" },
+        { country: "Azerbaijan", correct: "Baku", wrong: "Ganja" },
+        { country: "Georgia", correct: "Tbilisi", wrong: "Batumi" },
+        { country: "Qatar", correct: "Doha", wrong: "Al Rayyan" },
+        { country: "Kuwait", correct: "Kuwait City", wrong: "Al Ahmadi" },
+        { country: "Bahrain", correct: "Manama", wrong: "Riffa" },
+        { country: "Oman", correct: "Muscat", wrong: "Salalah" },
+        { country: "Yemen", correct: "Sanaa", wrong: "Aden" },
+
+        // --- AFRICA ---
+        { country: "Egypt", correct: "Cairo", wrong: "Alexandria" },
+        { country: "South Africa", correct: "Pretoria", wrong: "Johannesburg" },
+        { country: "Nigeria", correct: "Abuja", wrong: "Lagos" },
+        { country: "Kenya", correct: "Nairobi", wrong: "Mombasa" },
+        { country: "Ethiopia", correct: "Addis Ababa", wrong: "Dire Dawa" },
+        { country: "Morocco", correct: "Rabat", wrong: "Casablanca" },
+        { country: "Ghana", correct: "Accra", wrong: "Kumasi" },
+        { country: "Tanzania", correct: "Dodoma", wrong: "Dar es Salaam" },
+        { country: "Uganda", correct: "Kampala", wrong: "Entebbe" },
+        { country: "Algeria", correct: "Algiers", wrong: "Oran" },
+        { country: "Sudan", correct: "Khartoum", wrong: "Omdurman" },
+        { country: "Tunisia", correct: "Tunis", wrong: "Sfax" },
+        { country: "Libya", correct: "Tripoli", wrong: "Benghazi" },
+        { country: "Senegal", correct: "Dakar", wrong: "Touba" },
+        { country: "Ivory Coast", correct: "Yamoussoukro", wrong: "Abidjan" },
+        { country: "Cameroon", correct: "Yaounde", wrong: "Douala" },
+        { country: "DR Congo", correct: "Kinshasa", wrong: "Lubumbashi" },
+        { country: "Angola", correct: "Luanda", wrong: "Huambo" },
+        { country: "Zimbabwe", correct: "Harare", wrong: "Bulawayo" },
+        { country: "Zambia", correct: "Lusaka", wrong: "Livingstone" },
+        { country: "Rwanda", correct: "Kigali", wrong: "Butare" },
+        { country: "Namibia", correct: "Windhoek", wrong: "Walvis Bay" },
+        { country: "Botswana", correct: "Gaborone", wrong: "Francistown" },
+        { country: "Madagascar", correct: "Antananarivo", wrong: "Toamasina" },
+        { country: "Mozambique", correct: "Maputo", wrong: "Beira" },
+        { country: "Mali", correct: "Bamako", wrong: "Timbuktu" },
+        { country: "Somalia", correct: "Mogadishu", wrong: "Hargeisa" },
+        { country: "Mauritius", correct: "Port Louis", wrong: "Beau Bassin" },
+        { country: "Seychelles", correct: "Victoria", wrong: "Praslin" },
+
+        // --- OCEANIA ---
+        { country: "Australia", correct: "Canberra", wrong: "Sydney" },
+        { country: "New Zealand", correct: "Wellington", wrong: "Auckland" },
+        { country: "Fiji", correct: "Suva", wrong: "Nadi" },
+        { country: "Papua New Guinea", correct: "Port Moresby", wrong: "Lae" },
+        { country: "Samoa", correct: "Apia", wrong: "Salelologa" },
+        { country: "Tonga", correct: "Nuku'alofa", wrong: "Neiafu" },
+        { country: "Vanuatu", correct: "Port Vila", wrong: "Luganville" },
+        { country: "Solomon Islands", correct: "Honiara", wrong: "Gizo" },
+        { country: "Palau", correct: "Ngerulmud", wrong: "Koror" },
+        { country: "Micronesia", correct: "Palikir", wrong: "Weno" },
+        { country: "Marshall Islands", correct: "Majuro", wrong: "Ebeye" },
+        { country: "Kiribati", correct: "Tarawa", wrong: "Betio" },
+        { country: "Nauru", correct: "Yaren", wrong: "Denigomodu" }, // De facto capital
+        { country: "Tuvalu", correct: "Funafuti", wrong: "Asau" }
+    ];
+
+    // --- GAME CONTROL ---
+
+    function showMenu() {
+        menuScreen.classList.remove('hidden');
+        gameScreen.classList.add('hidden');
+        backButton.classList.add('hidden');
+        gameTitle.textContent = "PyleaMUN";
+        currentScore = 0;
+    }
+
+    function startMode(mode) {
+        gameMode = mode;
+        menuScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        backButton.classList.remove('hidden');
+
+        const storedBest = localStorage.getItem(`pyleaMunBest_${mode}`) || 0;
+        bestDisplay.textContent = storedBest;
+        scoreDisplay.textContent = 0;
+        currentScore = 0;
+
+        gameTitle.textContent = (mode === 'flags') ? "Flag Master" : "Capital Cities";
+        nextQuestion();
+    }
+
+    // --- LOGIC: FLAG MODE ---
+    function getFlagDistractor(correctCountry) {
+        const candidates = countries.filter(c => c.name !== correctCountry.name);
+        const sameLetter = candidates.filter(c => c.name[0] === correctCountry.name[0]);
+        const sameLength = candidates.filter(c => Math.abs(c.name.length - correctCountry.name.length) <= 2);
+
+        let pool = candidates;
+        if (Math.random() > 0.4 && sameLetter.length > 0) pool = sameLetter;
+        else if (Math.random() > 0.4 && sameLength.length > 0) pool = sameLength;
+
+        return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function nextQuestion() {
+        isClickable = true;
+        optionsContainer.innerHTML = '';
+        displayContainer.innerHTML = ''; 
+
+        if (gameMode === 'flags') {
+            setupFlagQuestion();
+        } else {
+            setupCapitalQuestion();
+        }
+    }
+
+    function setupFlagQuestion() {
+        displayContainer.className = "display-container flag-mode-bg";
+        
+        const correctIndex = Math.floor(Math.random() * countries.length);
+        const correctCountry = countries[correctIndex];
+        const wrongCountry = getFlagDistractor(correctCountry);
+
+        const img = document.createElement('img');
+        img.src = `https://flagcdn.com/256x192/${correctCountry.code}.png`;
+        img.className = "flag-img";
+        displayContainer.appendChild(img);
+
+        const options = [
+            { text: correctCountry.name, isCorrect: true },
+            { text: wrongCountry.name, isCorrect: false }
+        ].sort(() => Math.random() - 0.5);
+
+        renderButtons(options);
+    }
+
+    function setupCapitalQuestion() {
+        displayContainer.className = "display-container"; 
+        
+        const dataIndex = Math.floor(Math.random() * capitalsData.length);
+        const data = capitalsData[dataIndex];
+
+        const text = document.createElement('div');
+        text.className = "capital-text-display";
+        text.textContent = data.country;
+        displayContainer.appendChild(text);
+
+        const options = [
+            { text: data.correct, isCorrect: true },
+            { text: data.wrong, isCorrect: false }
+        ].sort(() => Math.random() - 0.5);
+
+        renderButtons(options);
+    }
+
+    function renderButtons(options) {
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'game-btn';
+            btn.textContent = opt.text;
+            btn.onclick = () => handleGuess(btn, opt.isCorrect, options);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function handleGuess(clickedBtn, isCorrect, allOptions) {
+        if (!isClickable) return;
+        isClickable = false;
+
+        const allBtns = optionsContainer.querySelectorAll('button');
+
+        if (isCorrect) {
+            clickedBtn.classList.add('correct');
+            currentScore++;
+            scoreDisplay.textContent = currentScore;
+            
+            const storageKey = `pyleaMunBest_${gameMode}`;
+            let best = parseInt(localStorage.getItem(storageKey) || 0);
+            if (currentScore > best) {
+                localStorage.setItem(storageKey, currentScore);
+                bestDisplay.textContent = currentScore;
+            }
+
+            setTimeout(nextQuestion, 1000);
+        } else {
+            clickedBtn.classList.add('wrong');
+            allBtns.forEach(btn => {
+                const optData = allOptions.find(o => o.text === btn.textContent);
+                if (optData && optData.isCorrect) btn.classList.add('correct');
+            });
+            
+            currentScore = 0;
+            setTimeout(() => {
+                scoreDisplay.textContent = 0;
+                nextQuestion();
+            }, 1500);
+        }
+    }
+</script>
+
+</body>
+</html>
